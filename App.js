@@ -56,43 +56,16 @@ const Section = ({children, title}): Node => {
 
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
-
+  const [componentId] = React.useState(Math.round(Math.random() * 1000));
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
   React.useEffect(() => {
-    console.info('Mount, check update');
-    Codepush.sync(
-      {
-        deploymentKey: '',
-        installMode: Codepush.InstallMode.ON_NEXT_RESTART,
-        mandatoryInstallMode: Codepush.InstallMode.IMMEDIATE,
-      },
-      async status => {
-        switch (status) {
-          case Codepush.SyncStatus.UP_TO_DATE:
-            this.loggerHelper.info(`up to date`);
-            break;
-          case Codepush.SyncStatus.DOWNLOADING_PACKAGE:
-            this.loggerHelper.info(`downloading update`);
-            break;
-          case Codepush.SyncStatus.UPDATE_INSTALLED:
-            this.loggerHelper.info(`update success`);
-          case Codepush.SyncStatus.UNKNOWN_ERROR:
-            throw new Error(
-              `${this.constructor.name} Unable to make codepush update`,
-            );
-          default:
-            console.info(`status ${status}`);
-        }
-      },
-      progress => {
-        console.info(
-          `Download ${progress.receivedBytes}/${progress.totalBytes}`,
-        );
-      },
-    );
+    console.info(`Mount App component with ID:${componentId}`);
+    return () => {
+      console.info(`Unmount App component with ID:${componentId}`);
+    };
   }, []);
 
   return (
@@ -106,6 +79,7 @@ const App: () => Node = () => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
+          <Text onPress={() => Codepush.restartApp(false)}>RESTART APP</Text>
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.js</Text> to change this
             screen and then come back to see your edits.
